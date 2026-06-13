@@ -1,0 +1,5 @@
+# generated output is rebuilt by CI, but committing it is fine too;
+# uncomment the next line if you'd rather not track it:
+# docs/index.html
+*.gem
+.DS_Store
