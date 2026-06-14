@@ -46,7 +46,24 @@ class Generator
   def logo     = meta.respond_to?(:logo?) && meta.logo? ? meta.logo_file : nil
 
   def ranked
-    @ranked ||= data[:teams].sort_by { |t| -(t[:points] || -1) }
+    @ranked ||= data[:teams]
+                .map { |t| t.merge(records[t[:name]]) }
+                .sort_by { |t| [-(t[:points] || -1), -t[:w], t[:l]] }
+  end
+
+  # Win/loss/draw per team from completed games (both scores present).
+  # Seed/bracket placeholders ("1st in Points") have no scores and are skipped.
+  def records
+    @records ||= Hash.new { |h, k| h[k] = { w: 0, l: 0, d: 0 } }.tap do |rec|
+      data[:games].each do |g|
+        next if g[:seed_game] || g[:home_score].nil? || g[:away_score].nil?
+        hs, as = g[:home_score], g[:away_score]
+        if    hs > as then rec[g[:home]][:w] += 1; rec[g[:away]][:l] += 1
+        elsif as > hs then rec[g[:away]][:w] += 1; rec[g[:home]][:l] += 1
+        else               rec[g[:home]][:d] += 1; rec[g[:away]][:d] += 1
+        end
+      end
+    end
   end
 
   def days
