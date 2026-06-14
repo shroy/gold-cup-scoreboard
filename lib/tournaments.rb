@@ -12,6 +12,8 @@ require "yaml"
 # committed in docs/<slug>/.
 module Tournament
   Entry = Struct.new(:slug, :dir, :meta, keyword_init: true) do
+    LOGO = "logo.png".freeze
+
     def csv_path = File.join(dir, "data.csv")
     def title    = meta["title"] || slug
     def location = meta["location"]
@@ -20,6 +22,12 @@ module Tournament
     def live      = meta["live"]            # nil or {"sheet_url"=>, "start"=>, "end"=>}
     def live?     = !archived? && live.is_a?(Hash) && live["sheet_url"]
     def buildable? = !archived?
+
+    # Optional per-tournament logo: tournaments/<slug>/logo.png. When present it
+    # replaces the default SVG crest in the page hero (and is copied to docs).
+    def logo_path = File.join(dir, LOGO)
+    def logo?     = File.exist?(logo_path)
+    def logo_file = LOGO
   end
 
   module Tournaments

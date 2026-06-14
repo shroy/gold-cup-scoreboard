@@ -41,10 +41,11 @@ module Tournament
 
     private
 
-    # Title sits in the first non-empty cell of row 0 (after blank cols).
+    # Title sits in the first non-empty cell of the first non-blank row
+    # (the sheet export may have leading blank rows before the title).
     def division_name
-      first = @rows[0]&.compact&.reject(&:empty?)&.first
-      first || "Tournament Division"
+      row = @rows.find { |r| r.any? { |c| !c.empty? } }
+      row&.reject(&:empty?)&.first || "Tournament Division"
     end
 
     # Standings block: rows before the games header that have a team name

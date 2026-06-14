@@ -42,6 +42,8 @@ class Generator
   def title    = meta.title
   def location = meta.location
   def category = meta.category
+  def division = data[:division]              # from the CSV title row
+  def logo     = meta.respond_to?(:logo?) && meta.logo? ? meta.logo_file : nil
 
   def ranked
     @ranked ||= data[:teams].sort_by { |t| -(t[:points] || -1) }
@@ -106,10 +108,11 @@ BareMeta = Struct.new(:title, :location, :category)
 def build_tournament(entry)
   data = Tournament::Parser.parse(entry.csv_path)
   html = Generator.new(data, entry).render
-  out  = File.join(DOCS, entry.slug, "index.html")
-  FileUtils.mkdir_p(File.dirname(out))
-  File.write(out, html)
-  puts "Built #{out} (#{html.bytesize} bytes) — #{entry.title}"
+  dir  = File.join(DOCS, entry.slug)
+  FileUtils.mkdir_p(dir)
+  File.write(File.join(dir, "index.html"), html)
+  FileUtils.cp(entry.logo_path, File.join(dir, entry.logo_file)) if entry.logo?
+  puts "Built #{File.join(dir, 'index.html')} (#{html.bytesize} bytes) — #{entry.title}"
   data
 end
 

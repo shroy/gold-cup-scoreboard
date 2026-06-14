@@ -3,9 +3,12 @@
 # tournament's CSV layout differs enough that the standings/games don't parse,
 # that's a lib/parser.rb change (see README).
 
-title: "Beaverton 4x4 Cup"        # shown as the page <h1>, browser title, and brand
-location: "Beaverton"             # small suffix in the top brand bar ("· Beaverton")
+title: "Beaverton 4x4 Cup"        # breadcrumb + browser title + landing card
+location: "Beaverton"             # shown on the landing card under the title
 category: "Soccer · Round Robin"  # the small crumb above the title
+# The page <h1> is the division name read from the CSV (e.g. "U10 Boys Gold").
+# Optional: drop a logo.png in this folder and it replaces the default crest in
+# the hero (and on the landing card). Omit it to use the soccer-ball crest.
 
 # Optional. Present => this tournament auto-fetches its CSV from a public Google
 # Sheet export during its date window (America/Los_Angeles, inclusive). Remove
