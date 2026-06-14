@@ -29,88 +29,94 @@ module Tournament
     end
 
     def parse
-      header_idx = @rows.index { |r| r.compact.first == GAMES_HEADER_KEY }
+      header_idx = @rows.index { |r| r.any? { |c| c.casecmp?(GAMES_HEADER_KEY) } }
       raise "No 'Game#' header row found — is this the right CSV?" unless header_idx
 
       {
-        division: division_name,
+        division: division_name(@rows[0...header_idx]),
         teams:    standings(@rows[0...header_idx]),
-        games:    games(@rows[(header_idx + 1)..]),
+        games:    games(@rows[(header_idx + 1)..], column_map(@rows[header_idx])),
       }
     end
 
     private
 
-    # Title sits in the first non-empty cell of the first non-blank row
-    # (the sheet export may have leading blank rows before the title).
-    def division_name
-      row = @rows.find { |r| r.any? { |c| !c.empty? } }
+    # Maps the games-header row to column indexes by LABEL, so the sheet's
+    # columns can be reordered without breaking the parser. The two "SCORE"
+    # columns are disambiguated as the ones following Home Team / Away Team.
+    def column_map(header)
+      find = ->(label) { header.index { |c| c.casecmp?(label) } }
+      home = find.("Home Team")
+      away = find.("Away Team")
+      score_after = ->(i) { (i...header.length).find { |j| header[j].casecmp?("SCORE") } if i }
+      {
+        game:        find.("Game#"),
+        day:         find.("Day"),
+        time:        find.("Time"),
+        field:       find.("Field"),
+        home:        home,
+        away:        away,
+        home_score:  score_after.(home),
+        away_score:  score_after.(away),
+      }
+    end
+
+    # Title is the first non-empty cell of the first non-blank row in the block
+    # above the games header (the title may share its row with a "POINTS" label).
+    def division_name(block)
+      row = block.find { |r| r.any? { |c| !c.empty? } }
       row&.reject(&:empty?)&.first || "Tournament Division"
     end
 
-    # Standings block: rows before the games header that have a team name
-    # and a numeric (or blank) points value. We detect "team rows" as those
-    # whose last two non-empty cells look like [name, number].
+    # Standings block: rows above the games header. A team row is any row whose
+    # last non-empty cell is an integer (its points); the name is the cell
+    # before it. This skips the title row, the "POINTS" header, and blanks
+    # regardless of how many leading/blank columns the export uses.
     def standings(block)
-      teams = []
-      block.each do |r|
-        cells = r.reject(&:empty?)
-        next if cells.empty?
-        next if cells.first.casecmp?("POINTS")          # skip the POINTS header
-        next if looks_like_title?(cells)                 # skip division title
-
-        name, pts = team_and_points(cells)
-        next unless name
-        teams << { name: name, points: pts }
-      end
-      teams
-    end
-
-    def looks_like_title?(cells)
-      cells.length == 1
-    end
-
-    # A team row is "<name>, <points>" or just "<name>" (points TBD/blank).
-    def team_and_points(cells)
-      if cells.length >= 2 && integer?(cells.last)
-        [normalize_name(cells[-2]), cells.last.to_i]
-      elsif cells.length == 1
-        [normalize_name(cells[0]), nil]
-      else
-        # name spread across cells, no trailing number
-        [normalize_name(cells.last), nil]
-      end
-    end
-
-    def games(block)
       block.filter_map do |r|
-        next if r.compact.reject(&:empty?).empty?
-        no    = r[0]
-        next if no.nil? || no.empty?
+        cells = r.reject(&:empty?)
+        next if cells.length < 2 || !integer?(cells.last)
 
-        day   = r[1]
-        time  = r[2]
-        field = r[3]
-        home  = normalize_name(r[4])
-        hs    = r[5]
-        away  = normalize_name(r[7])
-        as    = r[8]
-        # the round label ("Final"/"Consolation") trails after away-points
-        label = r[9..]&.compact&.map(&:strip)&.reject(&:empty?)&.last
+        { name: normalize_name(cells[-2]), points: cells.last.to_i }
+      end
+    end
+
+    def games(block, cols)
+      block.filter_map do |r|
+        no = at(r, cols[:game])
+        next if no.empty?
+
+        home = normalize_name(at(r, cols[:home]))
+        away = normalize_name(at(r, cols[:away]))
+        label = trailing_label(r, cols[:away_score])
+        seed = seed_placeholder?(home) || seed_placeholder?(away) || !label.nil?
 
         {
           id:    no,
-          day:   day,
-          time:  time,
-          field: field,
-          home:  home,
-          home_score: score(hs),
-          away:  away,
-          away_score: score(as),
-          label: bracket_label(label),
-          seed_game: seed_placeholder?(home) || seed_placeholder?(away),
+          day:   at(r, cols[:day]),
+          time:  at(r, cols[:time]),
+          field: at(r, cols[:field]),
+          # For played bracket games the name carries a "Nth in Points - " seed
+          # prefix; strip it for display once we know the real team.
+          home: strip_seed_prefix(home),
+          home_score: score(at(r, cols[:home_score])),
+          away: strip_seed_prefix(away),
+          away_score: score(at(r, cols[:away_score])),
+          label: label,
+          seed_game: seed,
         }
       end
+    end
+
+    def at(row, idx)
+      idx && row[idx] ? row[idx] : ""
+    end
+
+    # The round label ("Final"/"Consolation") trails after the away-score column.
+    def trailing_label(row, away_score_idx)
+      start = away_score_idx ? away_score_idx + 1 : 0
+      last  = row[start..]&.map(&:strip)&.reject(&:empty?)&.last
+      bracket_label(last)
     end
 
     def bracket_label(label)
@@ -124,6 +130,13 @@ module Tournament
 
     def seed_placeholder?(name)
       name.to_s.match?(/\bin Points\b/i)
+    end
+
+    # Played bracket games name the team as "5th in Points - 16B WSM Nemeziz".
+    # Strip the seed prefix so the real team shows; leave a bare placeholder
+    # ("5th in Points", no team yet) untouched.
+    def strip_seed_prefix(name)
+      name.sub(/\A\d+\w*\s+in Points\s*-\s*/i, "")
     end
 
     def score(v)
