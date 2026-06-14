@@ -21,7 +21,11 @@
   .top .wrap{display:flex;align-items:center;gap:12px;height:52px}
   .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:15px;letter-spacing:-.02em}
   .brand .bar{width:4px;height:18px;background:var(--accent);border-radius:2px}
-  .brand span{color:var(--mut);font-weight:600}
+  .crumbs{display:flex;align-items:center;gap:8px;min-width:0}
+  .crumbs a{color:var(--mut);font-weight:600;text-decoration:none;transition:color .15s}
+  .crumbs a:hover{color:var(--ink)}
+  .crumbs .sep{color:var(--faint);font-weight:500}
+  .crumbs .here{color:var(--ink);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .hero{padding:30px 0 18px;display:flex;align-items:flex-start;gap:18px}
   .crest{flex:none;width:60px;height:60px;border-radius:16px;background:linear-gradient(150deg,#1d1d1f,#000);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,.18);position:relative}
   .crest svg{width:34px;height:34px}.crest:after{content:"";position:absolute;inset:0;border-radius:16px;border:1px solid rgba(255,255,255,.08)}
@@ -88,7 +92,7 @@
 </head>
 <body>
 <div class="top"><div class="wrap">
-  <div class="brand"><span class="bar"></span>Beaverton 4x4 Cup <span>· Beaverton</span></div>
+  <nav class="brand crumbs" aria-label="Breadcrumb"><span class="bar"></span><a href="../">Scoreboards</a><span class="sep">/</span><span class="here" aria-current="page">Beaverton 4x4 Cup</span></nav>
 </div></div>
 <div class="wrap">
   <div class="hero">
@@ -107,7 +111,7 @@
         <span>12 matches</span><span class="d"></span>
         <span>Most points wins</span>
       </div>
-      <div class="asof"><span class="pulse"></span>Updated Sat Jun 13 · 11:15 PM</div>
+      <div class="asof"><span class="pulse"></span>Updated Sat Jun 13 · 11:21 PM</div>
     </div>
   </div>
   <div class="tabs" id="tabs">
@@ -166,7 +170,7 @@
     <div class="sechead">Placement Round</div>
     <div class="bracket" id="bracket"></div>
   </div>
-  <footer>Generated Sat Jun 13 · 11:15 PM from the tournament CSV. Standings rank by points; top two seeds meet in the Final. Beaverton 4x4 Cup.</footer>
+  <footer>Generated Sat Jun 13 · 11:21 PM from the tournament CSV. Standings rank by points; top two seeds meet in the Final. Beaverton 4x4 Cup.</footer>
 </div>
 <script>
 const GAMES = [{"id":"U10BG1","day":"Saturday 6/13","time":"9:30 AM","field":"3-4","home":"16B WSM Adi Stars","home_score":5,"away":"16B WSM Tiro","away_score":4,"label":null,"seed_game":false},{"id":"U10BG2","day":"Saturday 6/13","time":"9:30 AM","field":"3-2","home":"16B WSM Telstar","home_score":7,"away":"16B WSM TS Sala","away_score":6,"label":null,"seed_game":false},{"id":"U10BG3","day":"Saturday 6/13","time":"9:30 AM","field":"3-3","home":"16B WSM Nemeziz","home_score":1,"away":"16B WSM TS Trionda","away_score":4,"label":null,"seed_game":false},{"id":"U10BG4","day":"Saturday 6/13","time":"10:30 AM","field":"4-1","home":"16B WSM Adi Stars","home_score":7,"away":"16B WSM TS Sala","away_score":1,"label":null,"seed_game":false},{"id":"U10BG5","day":"Saturday 6/13","time":"10:30 AM","field":"3-2","home":"16B WSM Telstar","home_score":3,"away":"16B WSM TS Trionda","away_score":3,"label":null,"seed_game":false},{"id":"U10BG6","day":"Saturday 6/13","time":"10:30 AM","field":"3-3","home":"16B WSM Nemeziz","home_score":4,"away":"16B WSM Tiro","away_score":4,"label":null,"seed_game":false},{"id":"U10BG7","day":"Sunday 6/14","time":"9:30 AM","field":"3-4","home":"16B WSM TS Trionda","home_score":null,"away":"16B WSM Adi Stars","away_score":null,"label":null,"seed_game":false},{"id":"U10BG8","day":"Sunday 6/14","time":"9:30 AM","field":"3-2","home":"16B WSM Tiro","home_score":null,"away":"16B WSM Telstar","away_score":null,"label":null,"seed_game":false},{"id":"U10BG9","day":"Sunday 6/14","time":"9:30 AM","field":"3-3","home":"16B WSM TS Sala","home_score":null,"away":"16B WSM Nemeziz","away_score":null,"label":null,"seed_game":false},{"id":"U10BG10","day":"Sunday 6/14","time":"10:30 AM","field":"3-2","home":"5th in Points","home_score":null,"away":"6th in Points","away_score":null,"label":"Consolation","seed_game":true},{"id":"U10BG11","day":"Sunday 6/14","time":"10:30 AM","field":"3-3","home":"3rd in Points","home_score":null,"away":"4th in Points","away_score":null,"label":"Consolation","seed_game":true},{"id":"U10BG12","day":"Sunday 6/14","time":"10:30 AM","field":"4-1","home":"1st in Points","home_score":null,"away":"2nd in Points","away_score":null,"label":"Final","seed_game":true}];
