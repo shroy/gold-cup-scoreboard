@@ -3,7 +3,22 @@ name: Build and deploy scoreboard
 on:
   push:
     branches: [main]
-  workflow_dispatch:   # lets you trigger a rebuild manually from the Actions tab
+  workflow_dispatch:   # the "update now" button — always fetches and deploys, any date
+  schedule:
+    # Refresh from the live sheet every 10 min, ~8 AM–4 PM Pacific, Sat & Sun.
+    # NOTE: cron is in UTC and does NOT adjust for DST. In June, PDT = UTC−7, so
+    # 08:00–16:00 PT == 15:00–23:00 UTC. GitHub-hosted scheduled runs are
+    # best-effort and are often delayed 5–15+ min, so the 10-min cadence is
+    # approximate. The date-gate step below — NOT this cron — is what actually
+    # scopes runs to the tournament; outside the window scheduled runs no-op.
+    - cron: "*/10 15-23 * * 6,0"
+
+# Easy to edit for a future tournament: point SHEET_CSV_URL at the new tab's CSV
+# export (new gid) and update the two date vars (and the cron above if needed).
+env:
+  SHEET_CSV_URL: "https://docs.google.com/spreadsheets/d/1mlyRBvwrxhz6Kqy-dqykfjLve69C5gJkKzK4ZiexgV0/export?format=csv&gid=177221153"
+  TOURNAMENT_START: "2026-06-13"   # inclusive, America/Los_Angeles
+  TOURNAMENT_END: "2026-06-14"     # inclusive, America/Los_Angeles
 
 permissions:
   contents: read
@@ -17,23 +32,71 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      proceed: ${{ steps.gate.outputs.proceed }}
     steps:
+      - name: Date gate
+        id: gate
+        env:
+          TZ: America/Los_Angeles   # runner is UTC; evaluate "today" in Pacific
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "Manual trigger — proceeding regardless of date."
+            echo "proceed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          today="$(date +%F)"
+          echo "Today (America/Los_Angeles): $today"
+          echo "Tournament window: $TOURNAMENT_START .. $TOURNAMENT_END (inclusive)"
+          # ISO YYYY-MM-DD sorts lexically == chronologically.
+          if [ "$today" \< "$TOURNAMENT_START" ] || [ "$today" \> "$TOURNAMENT_END" ]; then
+            echo "Outside tournament window — no-op (no fetch, build, or deploy)."
+            echo "proceed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Inside tournament window — proceeding."
+            echo "proceed=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/checkout@v4
+        if: steps.gate.outputs.proceed == 'true'
 
       - uses: ruby/setup-ruby@v1
+        if: steps.gate.outputs.proceed == 'true'
         with:
           ruby-version: "3.2"
 
+      - name: Fetch latest CSV from Google Sheet
+        if: steps.gate.outputs.proceed == 'true'
+        run: |
+          # --retry 3 + -f so a flaky network or HTTP error fails the step rather
+          # than leaving a truncated/empty file.
+          curl -fSL --retry 3 "$SHEET_CSV_URL" -o data/u10-boys-gold.csv
+          # Guard against publishing garbage over a good page. If the sheet is ever
+          # restricted, the export returns an HTML login page (no "Game#" token) —
+          # caught here so the run fails loudly instead of deploying a broken page.
+          if [ ! -s data/u10-boys-gold.csv ]; then
+            echo "::error::Fetched CSV is empty — refusing to build/deploy."
+            exit 1
+          fi
+          if ! grep -q 'Game#' data/u10-boys-gold.csv; then
+            echo "::error::Fetched data is missing the 'Game#' header — likely not the expected CSV (restricted sheet?). Refusing to build/deploy."
+            exit 1
+          fi
+          echo "Fetched $(wc -c < data/u10-boys-gold.csv) bytes."
+
       - name: Build HTML from CSV
+        if: steps.gate.outputs.proceed == 'true'
         run: ruby build.rb
 
       - name: Upload Pages artifact
+        if: steps.gate.outputs.proceed == 'true'
         uses: actions/upload-pages-artifact@v3
         with:
           path: docs
 
   deploy:
     needs: build
+    if: needs.build.outputs.proceed == 'true'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
