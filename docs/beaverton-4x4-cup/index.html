@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title><%= title %></title>
+<title>Beaverton 4x4 Cup</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -88,7 +88,7 @@
 </head>
 <body>
 <div class="top"><div class="wrap">
-  <div class="brand"><span class="bar"></span><%= title %><% if location && !location.empty? %> <span>· <%= location %></span><% end %></div>
+  <div class="brand"><span class="bar"></span>Beaverton 4x4 Cup <span>· Beaverton</span></div>
 </div></div>
 <div class="wrap">
   <div class="hero">
@@ -100,19 +100,19 @@
       </svg>
     </div>
     <div class="herotext">
-      <div class="crumb"><%= category %></div>
-      <h1><%= title %></h1>
+      <div class="crumb">Soccer · Round Robin</div>
+      <h1>Beaverton 4x4 Cup</h1>
       <div class="meta">
-        <span><%= data[:teams].size %> teams</span><span class="d"></span>
-        <span><%= data[:games].size %> matches</span><span class="d"></span>
+        <span>6 teams</span><span class="d"></span>
+        <span>12 matches</span><span class="d"></span>
         <span>Most points wins</span>
       </div>
-      <div class="asof"><span class="pulse"></span>Updated <%= generated_at %></div>
+      <div class="asof"><span class="pulse"></span>Updated Sat Jun 13 · 11:15 PM</div>
     </div>
   </div>
   <div class="tabs" id="tabs">
     <button data-v="all" class="on">Overview</button>
-    <% days.each do |d| %><button data-v="day-<%= day_key(d) %>"><%= short_day(d) %></button><% end %>
+    <button data-v="day-saturday-6-13">Saturday</button><button data-v="day-sunday-6-14">Sunday</button>
     <button data-v="bracket">Bracket</button>
   </div>
   <div id="standwrap">
@@ -120,13 +120,43 @@
     <div class="stand"><table>
       <thead><tr><th class="rk">#</th><th class="tm">Team</th><th class="pts" style="padding-right:18px">Pts</th></tr></thead>
       <tbody>
-      <% ranked.each_with_index do |t,i| %>
-        <tr class="<%= i==0 ? 'q q1' : i==1 ? 'q q2' : '' %>">
-          <td class="rk"><%= i+1 %></td>
-          <td class="tm"><span class="seed"><%= initials(t[:name]) %></span><%= short_name(t[:name]) %></td>
-          <td class="pts tnum"><%= t[:points].nil? ? '—' : t[:points] %></td>
+      
+        <tr class="q q1">
+          <td class="rk">1</td>
+          <td class="tm"><span class="seed">AD</span>Adi Stars</td>
+          <td class="pts tnum">18</td>
         </tr>
-      <% end %>
+      
+        <tr class="q q2">
+          <td class="rk">2</td>
+          <td class="tm"><span class="seed">TE</span>Telstar</td>
+          <td class="pts tnum">15</td>
+        </tr>
+      
+        <tr class="">
+          <td class="rk">3</td>
+          <td class="tm"><span class="seed">TR</span>TS Trionda</td>
+          <td class="pts tnum">15</td>
+        </tr>
+      
+        <tr class="">
+          <td class="rk">4</td>
+          <td class="tm"><span class="seed">TI</span>Tiro</td>
+          <td class="pts tnum">9</td>
+        </tr>
+      
+        <tr class="">
+          <td class="rk">5</td>
+          <td class="tm"><span class="seed">NE</span>Nemeziz</td>
+          <td class="pts tnum">7</td>
+        </tr>
+      
+        <tr class="">
+          <td class="rk">6</td>
+          <td class="tm"><span class="seed">SA</span>TS Sala</td>
+          <td class="pts tnum">4</td>
+        </tr>
+      
       </tbody>
     </table></div>
   </div>
@@ -136,12 +166,12 @@
     <div class="sechead">Placement Round</div>
     <div class="bracket" id="bracket"></div>
   </div>
-  <footer>Generated <%= generated_at %> from the tournament CSV. Standings rank by points; top two seeds meet in the Final. <%= title %>.</footer>
+  <footer>Generated Sat Jun 13 · 11:15 PM from the tournament CSV. Standings rank by points; top two seeds meet in the Final. Beaverton 4x4 Cup.</footer>
 </div>
 <script>
-const GAMES = <%= games_json %>;
-const RANKED = <%= ranked_json %>;
-const DAYS = <%= days_json %>;
+const GAMES = [{"id":"U10BG1","day":"Saturday 6/13","time":"9:30 AM","field":"3-4","home":"16B WSM Adi Stars","home_score":5,"away":"16B WSM Tiro","away_score":4,"label":null,"seed_game":false},{"id":"U10BG2","day":"Saturday 6/13","time":"9:30 AM","field":"3-2","home":"16B WSM Telstar","home_score":7,"away":"16B WSM TS Sala","away_score":6,"label":null,"seed_game":false},{"id":"U10BG3","day":"Saturday 6/13","time":"9:30 AM","field":"3-3","home":"16B WSM Nemeziz","home_score":1,"away":"16B WSM TS Trionda","away_score":4,"label":null,"seed_game":false},{"id":"U10BG4","day":"Saturday 6/13","time":"10:30 AM","field":"4-1","home":"16B WSM Adi Stars","home_score":7,"away":"16B WSM TS Sala","away_score":1,"label":null,"seed_game":false},{"id":"U10BG5","day":"Saturday 6/13","time":"10:30 AM","field":"3-2","home":"16B WSM Telstar","home_score":3,"away":"16B WSM TS Trionda","away_score":3,"label":null,"seed_game":false},{"id":"U10BG6","day":"Saturday 6/13","time":"10:30 AM","field":"3-3","home":"16B WSM Nemeziz","home_score":4,"away":"16B WSM Tiro","away_score":4,"label":null,"seed_game":false},{"id":"U10BG7","day":"Sunday 6/14","time":"9:30 AM","field":"3-4","home":"16B WSM TS Trionda","home_score":null,"away":"16B WSM Adi Stars","away_score":null,"label":null,"seed_game":false},{"id":"U10BG8","day":"Sunday 6/14","time":"9:30 AM","field":"3-2","home":"16B WSM Tiro","home_score":null,"away":"16B WSM Telstar","away_score":null,"label":null,"seed_game":false},{"id":"U10BG9","day":"Sunday 6/14","time":"9:30 AM","field":"3-3","home":"16B WSM TS Sala","home_score":null,"away":"16B WSM Nemeziz","away_score":null,"label":null,"seed_game":false},{"id":"U10BG10","day":"Sunday 6/14","time":"10:30 AM","field":"3-2","home":"5th in Points","home_score":null,"away":"6th in Points","away_score":null,"label":"Consolation","seed_game":true},{"id":"U10BG11","day":"Sunday 6/14","time":"10:30 AM","field":"3-3","home":"3rd in Points","home_score":null,"away":"4th in Points","away_score":null,"label":"Consolation","seed_game":true},{"id":"U10BG12","day":"Sunday 6/14","time":"10:30 AM","field":"4-1","home":"1st in Points","home_score":null,"away":"2nd in Points","away_score":null,"label":"Final","seed_game":true}];
+const RANKED = [{"name":"16B WSM Adi Stars","points":18},{"name":"16B WSM Telstar","points":15},{"name":"16B WSM TS Trionda","points":15},{"name":"16B WSM Tiro","points":9},{"name":"16B WSM Nemeziz","points":7},{"name":"16B WSM TS Sala","points":4}];
+const DAYS = ["Saturday 6/13","Sunday 6/14"];
 function shortName(n){return n.replace(/^\d+B?\s+/,'').replace(/^WSM\s+/,'').replace(/\bin Points\b/i,'Seed')}
 function initials(n){const s=shortName(n).replace(/^TS\s+/,'');return s.slice(0,2).toUpperCase()}
 function dayKey(d){return d.toLowerCase().replace(/[^a-z0-9]+/g,'-')}

@@ -1,0 +1,22 @@
+# Per-tournament config. Copy this folder for a new tournament, drop in its
+# data.csv, and edit the fields below. Every CSV is different — if a new
+# tournament's CSV layout differs enough that the standings/games don't parse,
+# that's a lib/parser.rb change (see README).
+
+title: "Beaverton 4x4 Cup"        # shown as the page <h1>, browser title, and brand
+location: "Beaverton"             # small suffix in the top brand bar ("· Beaverton")
+category: "Soccer · Round Robin"  # the small crumb above the title
+
+# Optional. Present => this tournament auto-fetches its CSV from a public Google
+# Sheet export during its date window (America/Los_Angeles, inclusive). Remove
+# this block (or set `archived: true` below) for a static, hand-committed CSV.
+live:
+  sheet_url: "https://docs.google.com/spreadsheets/d/1mlyRBvwrxhz6Kqy-dqykfjLve69C5gJkKzK4ZiexgV0/export?format=csv&gid=177221153"
+  start: "2026-06-13"             # inclusive
+  end: "2026-06-14"               # inclusive
+
+# When the tournament is over, set this to true. Archived tournaments are FROZEN:
+# fetch.rb never refreshes them and build.rb never regenerates them — the page
+# already committed in docs/<slug>/ is served as-is forever, immune to future
+# parser/template changes made for later tournaments.
+archived: false

@@ -52,8 +52,8 @@
     <p>Live standings, fixtures, and brackets — one page per tournament.</p>
   </div>
   <div class="list">
-  
-    <a class="card" href="beaverton-4x4-cup/">
+  <% entries.each do |t| %>
+    <a class="card" href="<%= t.slug %>/">
       <span class="crest" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="12" cy="12" r="10" stroke="#fff" stroke-width="1.4"/>
@@ -62,18 +62,20 @@
         </svg>
       </span>
       <span class="c-body">
-        <span class="c-cat">Soccer · Round Robin</span>
-        <div class="c-title">Beaverton 4x4 Cup</div>
-        <div class="c-loc">Beaverton</div>
+        <span class="c-cat"><%= t.category %></span>
+        <div class="c-title"><%= t.title %></div>
+        <% if t.location && !t.location.empty? %><div class="c-loc"><%= t.location %></div><% end %>
       </span>
-      
+      <% if t.archived? %>
+        <span class="badge archived">Final</span>
+      <% elsif t.live? %>
         <span class="badge live"><span class="dot"></span>Live</span>
-      
+      <% end %>
       <span class="chev">›</span>
     </a>
-  
+  <% end %>
   </div>
-  <footer>Generated Sat Jun 13 · 11:15 PM.</footer>
+  <footer>Generated <%= generated_at %>.</footer>
 </div>
 </body>
 </html>
