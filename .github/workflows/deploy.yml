@@ -17,7 +17,7 @@ on:
 # export (new gid) and update the two date vars (and the cron above if needed).
 env:
   SHEET_CSV_URL: "https://docs.google.com/spreadsheets/d/1mlyRBvwrxhz6Kqy-dqykfjLve69C5gJkKzK4ZiexgV0/export?format=csv&gid=177221153"
-  TOURNAMENT_START: "2026-06-13"   # inclusive, America/Los_Angeles
+  TOURNAMENT_START: "2026-06-14"   # inclusive, America/Los_Angeles
   TOURNAMENT_END: "2026-06-14"     # inclusive, America/Los_Angeles
 
 permissions:
