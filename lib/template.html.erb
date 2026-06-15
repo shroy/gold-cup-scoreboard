@@ -146,8 +146,8 @@
         <th class="rk">#</th>
         <th class="tm">Team</th>
         <th class="rec sortable" data-sort="w" title="Sort by wins">W<span class="arrow">▲</span></th>
+        <th class="rec sortable" data-sort="d" title="Sort by ties">T<span class="arrow">▲</span></th>
         <th class="rec sortable" data-sort="l" title="Sort by losses">L<span class="arrow">▲</span></th>
-        <th class="rec sortable" data-sort="d" title="Sort by draws">D<span class="arrow">▲</span></th>
         <th class="pts sortable" data-sort="pts" style="padding-right:18px" title="Sort by points">Pts<span class="arrow">▲</span></th>
       </tr></thead>
       <tbody>
@@ -157,8 +157,8 @@
           <td class="rk"><%= place %></td>
           <td class="tm"><span class="seed"><%= initials(t[:name]) %></span><span class="nm"><%= short_name(t[:name]) %></span><% if placement_complete? && (m = medal(place)) %><span class="medal"><%= m %></span><% end %></td>
           <td class="rec tnum"><%= t[:w] %></td>
-          <td class="rec tnum"><%= t[:l] %></td>
           <td class="rec tnum"><%= t[:d] %></td>
+          <td class="rec tnum"><%= t[:l] %></td>
           <td class="pts tnum"><%= t[:points].nil? ? '—' : t[:points] %></td>
         </tr>
       <% end %>
