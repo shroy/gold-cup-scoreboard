@@ -53,6 +53,12 @@
   .stand th.rec{width:34px;padding:13px 6px;color:var(--faint)}
   .stand td.rec{width:34px;padding:14px 6px;font-size:14px;font-weight:600;color:var(--mut)}
   .stand td.pts{font-weight:800;font-size:16px;padding-right:18px}
+  .places{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+  .place{display:flex;align-items:center;gap:11px;background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:13px 15px;border:1px solid var(--hair2)}
+  .place .pn{font-size:20px;font-weight:800;min-width:30px;text-align:center;color:var(--faint);font-variant-numeric:tabular-nums}
+  .place.p1{border-color:var(--gold);box-shadow:0 0 0 2px rgba(202,166,75,.18),var(--shadow)}
+  .place .pteam{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px;min-width:0}
+  .place .pteam .nm,.place .pteam{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .seed{width:26px;height:26px;border-radius:7px;background:var(--pill);display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--mut);flex:none}
   tr.q1 .seed{background:var(--gold);color:#fff}tr.q2 .seed{background:#e8e8ed;color:var(--ink)}
   tr.q .rk{color:var(--accent)}tr.q1 td{background:rgba(202,166,75,.06)}
@@ -84,6 +90,12 @@
   .slot .seedlabel{display:flex;flex-direction:column;gap:1px;min-width:0}
   .slot .seedlabel .lab{font-weight:700}
   .slot .seedlabel .proj{font-size:11px;font-weight:500;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .slot .bsc{margin-left:auto;font-size:16px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--mut)}
+  .slot.win .bsc{color:var(--ink)}.slot.win .lab{font-weight:800}
+  .slot.lose .lab{color:var(--mut)}.slot.lose .bsc{color:var(--faint)}
+  .slot .bcheck{color:var(--live);font-weight:800;margin-left:8px}
+  .slot.lose .bcheck{display:none}
+  .bout .winner{color:var(--ink);font-weight:800}.brow.final .bout .winner{color:var(--gold)}
   .brow.final .slot:first-child .sd{background:var(--gold);color:#fff}.brow.final .slot:nth-child(2) .sd{background:#e8e8ed;color:var(--ink)}
   .bconn{flex:none;width:34px;align-self:stretch;position:relative}
   .bconn:before{content:"";position:absolute;left:0;top:50%;width:100%;border-top:2px solid var(--hair)}
@@ -110,7 +122,7 @@
         <span>12 matches</span><span class="d"></span>
         <span>Most points wins</span>
       </div>
-      <div class="asof"><span class="pulse"></span>Updated Sun Jun 14 · 11:56 AM</div>
+      <div class="asof"><span class="pulse"></span>Updated Sun Jun 14 · 10:36 PM</div>
     </div>
   </div>
   <div class="tabs" id="tabs">
@@ -119,7 +131,43 @@
     <button data-v="bracket">Bracket</button>
   </div>
   <div id="standwrap">
-    <div class="sechead">Standings</div>
+    
+    <div class="sechead">Final Placement</div>
+    <div class="places">
+      
+      <div class="place p1">
+        <span class="pn">🥇</span>
+        <span class="pteam"><span class="seed">AD</span>Adi Stars</span>
+      </div>
+      
+      <div class="place p2">
+        <span class="pn">🥈</span>
+        <span class="pteam"><span class="seed">TI</span>Tiro</span>
+      </div>
+      
+      <div class="place p3">
+        <span class="pn">🥉</span>
+        <span class="pteam"><span class="seed">TR</span>TS Trionda</span>
+      </div>
+      
+      <div class="place p4">
+        <span class="pn">4</span>
+        <span class="pteam"><span class="seed">TE</span>Telstar</span>
+      </div>
+      
+      <div class="place p5">
+        <span class="pn">5</span>
+        <span class="pteam"><span class="seed">NE</span>Nemeziz</span>
+      </div>
+      
+      <div class="place p6">
+        <span class="pn">6</span>
+        <span class="pteam"><span class="seed">SA</span>TS Sala</span>
+      </div>
+      
+    </div>
+    
+    <div class="sechead">Group Stage</div>
     <div class="stand"><table>
       <thead><tr><th class="rk">#</th><th class="tm">Team</th><th class="rec">W</th><th class="rec">L</th><th class="rec">D</th><th class="pts" style="padding-right:18px">Pts</th></tr></thead>
       <tbody>
@@ -187,12 +235,13 @@
     <div class="sechead">Placement Round</div>
     <div class="bracket" id="bracket"></div>
   </div>
-  <footer>Generated Sun Jun 14 · 11:56 AM from the tournament CSV. Standings rank by points; top two seeds meet in the Final. Beaverton 4x4 Cup.</footer>
+  <footer>Generated Sun Jun 14 · 10:36 PM from the tournament CSV. Group stage ranks by points to seed the placement bracket; bracket results set final placement. Beaverton 4x4 Cup.</footer>
 </div>
 <script>
-const GAMES = [{"id":"U10BG1","day":"Saturday 6/13","time":"9:30 AM","field":"3-4","home":"16B WSM Adi Stars","home_score":5,"away":"16B WSM Tiro","away_score":4,"label":null,"seed_game":false},{"id":"U10BG2","day":"Saturday 6/13","time":"9:30 AM","field":"3-2","home":"16B WSM Telstar","home_score":7,"away":"16B WSM TS Sala","away_score":6,"label":null,"seed_game":false},{"id":"U10BG3","day":"Saturday 6/13","time":"9:30 AM","field":"3-3","home":"16B WSM Nemeziz","home_score":1,"away":"16B WSM TS Trionda","away_score":4,"label":null,"seed_game":false},{"id":"U10BG4","day":"Saturday 6/13","time":"10:30 AM","field":"4-1","home":"16B WSM Adi Stars","home_score":7,"away":"16B WSM TS Sala","away_score":1,"label":null,"seed_game":false},{"id":"U10BG5","day":"Saturday 6/13","time":"10:30 AM","field":"3-2","home":"16B WSM Telstar","home_score":3,"away":"16B WSM TS Trionda","away_score":3,"label":null,"seed_game":false},{"id":"U10BG6","day":"Saturday 6/13","time":"10:30 AM","field":"3-3","home":"16B WSM Nemeziz","home_score":4,"away":"16B WSM Tiro","away_score":4,"label":null,"seed_game":false},{"id":"U10BG7","day":"Sunday 6/14","time":"9:30 AM","field":"3-4","home":"16B WSM TS Trionda","home_score":1,"away":"16B WSM Adi Stars","away_score":4,"label":null,"seed_game":false},{"id":"U10BG8","day":"Sunday 6/14","time":"9:30 AM","field":"3-2","home":"16B WSM Tiro","home_score":3,"away":"16B WSM Telstar","away_score":2,"label":null,"seed_game":false},{"id":"U10BG9","day":"Sunday 6/14","time":"9:30 AM","field":"3-3","home":"16B WSM TS Sala","home_score":2,"away":"16B WSM Nemeziz","away_score":5,"label":null,"seed_game":false},{"id":"U10BG10","day":"Sunday 6/14","time":"10:30 AM","field":"3-2","home":"16B WSM Nemeziz","home_score":6,"away":"16B WSM TS Sala","away_score":1,"label":"Consolation","seed_game":true},{"id":"U10BG11","day":"Sunday 6/14","time":"10:30 AM","field":"3-3","home":"16B WSM Telstar","home_score":1,"away":"16B WSM TS Trionda","away_score":4,"label":"Consolation","seed_game":true},{"id":"U10BG12","day":"Sunday 6/14","time":"10:30 AM","field":"4-1","home":"16B WSM Adi Stars","home_score":2,"away":"16B WSM Tiro","away_score":1,"label":"Final","seed_game":true}];
+const GAMES = [{"id":"U10BG1","day":"Saturday 6/13","time":"9:30 AM","field":"3-4","home":"16B WSM Adi Stars","home_score":5,"away":"16B WSM Tiro","away_score":4,"home_seed":null,"away_seed":null,"label":null,"seed_game":false},{"id":"U10BG2","day":"Saturday 6/13","time":"9:30 AM","field":"3-2","home":"16B WSM Telstar","home_score":7,"away":"16B WSM TS Sala","away_score":6,"home_seed":null,"away_seed":null,"label":null,"seed_game":false},{"id":"U10BG3","day":"Saturday 6/13","time":"9:30 AM","field":"3-3","home":"16B WSM Nemeziz","home_score":1,"away":"16B WSM TS Trionda","away_score":4,"home_seed":null,"away_seed":null,"label":null,"seed_game":false},{"id":"U10BG4","day":"Saturday 6/13","time":"10:30 AM","field":"4-1","home":"16B WSM Adi Stars","home_score":7,"away":"16B WSM TS Sala","away_score":1,"home_seed":null,"away_seed":null,"label":null,"seed_game":false},{"id":"U10BG5","day":"Saturday 6/13","time":"10:30 AM","field":"3-2","home":"16B WSM Telstar","home_score":3,"away":"16B WSM TS Trionda","away_score":3,"home_seed":null,"away_seed":null,"label":null,"seed_game":false},{"id":"U10BG6","day":"Saturday 6/13","time":"10:30 AM","field":"3-3","home":"16B WSM Nemeziz","home_score":4,"away":"16B WSM Tiro","away_score":4,"home_seed":null,"away_seed":null,"label":null,"seed_game":false},{"id":"U10BG7","day":"Sunday 6/14","time":"9:30 AM","field":"3-4","home":"16B WSM TS Trionda","home_score":1,"away":"16B WSM Adi Stars","away_score":4,"home_seed":null,"away_seed":null,"label":null,"seed_game":false},{"id":"U10BG8","day":"Sunday 6/14","time":"9:30 AM","field":"3-2","home":"16B WSM Tiro","home_score":3,"away":"16B WSM Telstar","away_score":2,"home_seed":null,"away_seed":null,"label":null,"seed_game":false},{"id":"U10BG9","day":"Sunday 6/14","time":"9:30 AM","field":"3-3","home":"16B WSM TS Sala","home_score":2,"away":"16B WSM Nemeziz","away_score":5,"home_seed":null,"away_seed":null,"label":null,"seed_game":false},{"id":"U10BG10","day":"Sunday 6/14","time":"10:30 AM","field":"3-2","home":"16B WSM Nemeziz","home_score":6,"away":"16B WSM TS Sala","away_score":1,"home_seed":5,"away_seed":6,"label":"Consolation","seed_game":true},{"id":"U10BG11","day":"Sunday 6/14","time":"10:30 AM","field":"3-3","home":"16B WSM Telstar","home_score":1,"away":"16B WSM TS Trionda","away_score":4,"home_seed":3,"away_seed":4,"label":"Consolation","seed_game":true},{"id":"U10BG12","day":"Sunday 6/14","time":"10:30 AM","field":"4-1","home":"16B WSM Adi Stars","home_score":2,"away":"16B WSM Tiro","away_score":1,"home_seed":1,"away_seed":2,"label":"Final","seed_game":true}];
 const RANKED = [{"name":"16B WSM Adi Stars","points":27,"w":3,"l":0,"d":0},{"name":"16B WSM Tiro","points":18,"w":1,"l":1,"d":1},{"name":"16B WSM Telstar","points":17,"w":1,"l":1,"d":1},{"name":"16B WSM Nemeziz","points":16,"w":1,"l":1,"d":1},{"name":"16B WSM TS Trionda","points":16,"w":1,"l":1,"d":1},{"name":"16B WSM TS Sala","points":6,"w":0,"l":3,"d":0}];
 const DAYS = ["Saturday 6/13","Sunday 6/14"];
+const PLACEMENT = {"16B WSM Nemeziz":5,"16B WSM TS Sala":6,"16B WSM TS Trionda":3,"16B WSM Telstar":4,"16B WSM Adi Stars":1,"16B WSM Tiro":2};
 function shortName(n){return n.replace(/^\d+B?\s+/,'').replace(/^WSM\s+/,'').replace(/\bin Points\b/i,'Seed')}
 function initials(n){const s=shortName(n).replace(/^TS\s+/,'');return s.slice(0,2).toUpperCase()}
 function dayKey(d){return d.toLowerCase().replace(/[^a-z0-9]+/g,'-')}
@@ -227,10 +276,35 @@ function renderBracket(){
   const rounds=[{label:"Championship",a:1,b:2,final:true,out:"Champion"}];
   if(names.length>=4) rounds.push({label:"3rd Place",a:3,b:4,final:false,out:"3rd place"});
   if(names.length>=6) rounds.push({label:"5th Place",a:5,b:6,final:false,out:"5th place"});
-  const slot=n=>`<div class="slot"><span class="sd">${n}</span><span class="seedlabel"><span class="lab">${ord[n-1]}</span><span class="proj">Projected: ${shortName(proj(n))}</span></span></div>`;
-  document.getElementById('bracket').innerHTML=
-    `<div class="blegend">Seeding isn't final until group play ends. Slots show each seed, with the <strong>currently projected</strong> team in grey.</div>`+
-    rounds.map(rd=>`<div class="brow ${rd.final?'final':''}"><div class="blabel">${rd.label}</div><div class="matchup">${slot(rd.a)}${slot(rd.b)}</div><div class="bconn"></div><div class="bout">${rd.final?'<span class="trophy">🏆</span>':''}${rd.out}</div></div>`).join('');
+  // Find the played bracket game pairing two given seeds, if any.
+  const gameFor=(a,b)=>GAMES.find(g=>g.seed_game&&g.home_score!=null&&g.away_score!=null&&
+    [g.home_seed,g.away_seed].sort().join()===[a,b].sort().join());
+  // A slot when the game IS played: real team + score, winner emphasized.
+  const playedSlot=(seed,team,score,win)=>`<div class="slot ${win?'win':'lose'}"><span class="sd">${seed}</span><span class="seedlabel"><span class="lab">${shortName(team)}</span><span class="proj">${ord[seed-1]}</span></span><span class="bsc">${score}</span>${win?'<span class="bcheck">✓</span>':''}</div>`;
+  // A slot when NOT yet played: projection from current seeding.
+  const projSlot=n=>`<div class="slot"><span class="sd">${n}</span><span class="seedlabel"><span class="lab">${ord[n-1]}</span><span class="proj">Projected: ${shortName(proj(n))}</span></span></div>`;
+  const anyPlayed=rounds.some(rd=>gameFor(rd.a,rd.b));
+  const renderRound=rd=>{
+    const g=gameFor(rd.a,rd.b);
+    let inner, out;
+    if(g){
+      const hw=g.home_score>g.away_score;
+      // map each game side back to its seed so the higher seed shows on top
+      const sideFor=s=>g.home_seed===s?{team:g.home,score:g.home_score,win:hw}:{team:g.away,score:g.away_score,win:!hw};
+      const top=sideFor(rd.a), bot=sideFor(rd.b);
+      inner=playedSlot(rd.a,top.team,top.score,top.win)+playedSlot(rd.b,bot.team,bot.score,bot.win);
+      const winner=top.win?top.team:bot.team;
+      out=`${rd.final?'<span class="trophy">🏆</span>':''}<span class="winner">${shortName(winner)}</span>`;
+    }else{
+      inner=projSlot(rd.a)+projSlot(rd.b);
+      out=`${rd.final?'<span class="trophy">🏆</span>':''}${rd.out}`;
+    }
+    return `<div class="brow ${rd.final?'final':''}"><div class="blabel">${rd.label}</div><div class="matchup">${inner}</div><div class="bconn"></div><div class="bout">${out}</div></div>`;
+  };
+  const legend=anyPlayed
+    ?`<div class="blegend">Final results of the placement bracket. Each game decided two places; the <strong>winner</strong> is checked.</div>`
+    :`<div class="blegend">Seeding isn't final until group play ends. Slots show each seed, with the <strong>currently projected</strong> team in grey.</div>`;
+  document.getElementById('bracket').innerHTML=legend+rounds.map(renderRound).join('');
 }
 function setView(v){
   const games=v!=='bracket';

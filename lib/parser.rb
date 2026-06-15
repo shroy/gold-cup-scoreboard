@@ -32,10 +32,12 @@ module Tournament
       header_idx = @rows.index { |r| r.any? { |c| c.casecmp?(GAMES_HEADER_KEY) } }
       raise "No 'Game#' header row found — is this the right CSV?" unless header_idx
 
+      all_games = games(@rows[(header_idx + 1)..], column_map(@rows[header_idx]))
       {
-        division: division_name(@rows[0...header_idx]),
-        teams:    standings(@rows[0...header_idx]),
-        games:    games(@rows[(header_idx + 1)..], column_map(@rows[header_idx])),
+        division:  division_name(@rows[0...header_idx]),
+        teams:     standings(@rows[0...header_idx]),
+        games:     all_games,
+        placement: placement(all_games),
       }
     end
 
@@ -102,10 +104,35 @@ module Tournament
           home_score: score(at(r, cols[:home_score])),
           away: strip_seed_prefix(away),
           away_score: score(at(r, cols[:away_score])),
+          # seed number embedded in the bracket name ("3rd in Points - ..."), or nil
+          home_seed: seed_number(home),
+          away_seed: seed_number(away),
           label: label,
           seed_game: seed,
         }
       end
+    end
+
+    # Final placement from completed bracket games. Each placement game pairs
+    # two adjacent seeds (e.g. 1 vs 2, 3 vs 4); the winner takes the higher
+    # place (lower number), the loser the lower place. Returns a hash of
+    # team name => place (1-based), only for games that have been played with
+    # both seed numbers known.
+    def placement(games)
+      result = {}
+      games.each do |g|
+        next unless g[:seed_game]
+        next if g[:home_seed].nil? || g[:away_seed].nil?
+        next if g[:home_score].nil? || g[:away_score].nil?
+
+        hi, lo = [g[:home_seed], g[:away_seed]].minmax
+        home_wins = g[:home_score] > g[:away_score]
+        winner = home_wins ? g[:home] : g[:away]
+        loser  = home_wins ? g[:away] : g[:home]
+        result[winner] = hi
+        result[loser]  = lo
+      end
+      result
     end
 
     def at(row, idx)
@@ -130,6 +157,12 @@ module Tournament
 
     def seed_placeholder?(name)
       name.to_s.match?(/\bin Points\b/i)
+    end
+
+    # "3rd in Points - 16B WSM Telstar" -> 3 ; returns nil if no seed prefix.
+    def seed_number(name)
+      m = name.to_s.match(/\A(\d+)\w*\s+in Points\b/i)
+      m && m[1].to_i
     end
 
     # Played bracket games name the team as "5th in Points - 16B WSM Nemeziz".

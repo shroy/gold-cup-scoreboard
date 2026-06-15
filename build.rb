@@ -70,6 +70,20 @@ class Generator
     @days ||= data[:games].map { |g| g[:day] }.compact.uniq
   end
 
+  # Teams in final-placement order (1st..Nth) from the completed bracket.
+  # Empty until at least one placement game is played.
+  def placed
+    @placed ||= (data[:placement] || {})
+                .sort_by { |_name, place| place }
+                .map { |name, place| { place: place, name: name } }
+  end
+
+  # Final placement is "complete" once every team has a place — i.e. the
+  # bracket fully resolved the standings. Until then we don't show it.
+  def placement_complete?
+    placed.any? && placed.size == data[:teams].size
+  end
+
   def generated_at
     Time.now.strftime("%a %b %-d · %-l:%M %p")
   end
@@ -87,14 +101,20 @@ class Generator
     d.to_s.split.first # "Saturday 6/13" -> "Saturday"
   end
 
+  # Medal emoji for the podium, plain number otherwise.
+  def medal(place)
+    { 1 => "🥇", 2 => "🥈", 3 => "🥉" }[place] || place.to_s
+  end
+
   def day_key(d)
     d.to_s.downcase.gsub(/[^a-z0-9]+/, "-")
   end
 
   # --- JSON blobs handed to the client script ---
-  def games_json  = JSON.generate(data[:games])
-  def ranked_json = JSON.generate(ranked)
-  def days_json   = JSON.generate(days)
+  def games_json     = JSON.generate(data[:games])
+  def ranked_json    = JSON.generate(ranked)
+  def days_json      = JSON.generate(days)
+  def placement_json = JSON.generate(data[:placement] || {})
 end
 
 # Renders the landing page that links to every tournament.
