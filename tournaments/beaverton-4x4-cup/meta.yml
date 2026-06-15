@@ -10,16 +10,16 @@ category: "Soccer · Round Robin"  # the small crumb above the title
 # Optional: drop a logo.png in this folder and it replaces the default crest in
 # the hero (and on the landing card). Omit it to use the soccer-ball crest.
 
-# Optional. Present => this tournament auto-fetches its CSV from a public Google
-# Sheet export during its date window (America/Los_Angeles, inclusive). Remove
-# this block (or set `archived: true` below) for a static, hand-committed CSV.
-live:
-  sheet_url: "https://docs.google.com/spreadsheets/d/1mlyRBvwrxhz6Kqy-dqykfjLve69C5gJkKzK4ZiexgV0/export?format=csv&gid=177221153"
-  start: "2026-06-13"             # inclusive
-  end: "2026-06-14"               # inclusive
+# This tournament is over. While it was live it auto-fetched from a public
+# Google Sheet during its date window; the `live:` block is kept (commented)
+# only for reference. Archived now, so the block is inert either way.
+# live:
+#   sheet_url: "https://docs.google.com/spreadsheets/d/1mlyRBvwrxhz6Kqy-dqykfjLve69C5gJkKzK4ZiexgV0/export?format=csv&gid=177221153"
+#   start: "2026-06-13"            # inclusive
+#   end: "2026-06-14"              # inclusive
 
-# When the tournament is over, set this to true. Archived tournaments are FROZEN:
-# fetch.rb never refreshes them and build.rb never regenerates them — the page
-# already committed in docs/<slug>/ is served as-is forever, immune to future
-# parser/template changes made for later tournaments.
-archived: false
+# Tournament is over. Archived => FROZEN: fetch.rb never refreshes it and
+# build.rb never regenerates it — the page already committed in docs/<slug>/
+# is served as-is forever, immune to future parser/template changes made for
+# later tournaments. (The final 2026-06-13/14 page is what stays live.)
+archived: true

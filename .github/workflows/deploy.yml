@@ -4,14 +4,11 @@ on:
   push:
     branches: [main]
   workflow_dispatch:   # the "update now" button — always fetches live + deploys
-  schedule:
-    # Refresh live tournaments every 10 min, ~8 AM–4 PM Pacific, Sat & Sun.
-    # NOTE: cron is in UTC and does NOT adjust for DST. In June, PDT = UTC−7, so
-    # 08:00–16:00 PT == 15:00–23:00 UTC. GitHub-hosted scheduled runs are
-    # best-effort and are often delayed 5–15+ min, so the cadence is approximate.
-    # The per-tournament date window in each meta.yml — NOT this cron — is what
-    # actually scopes refreshes; outside every window a scheduled run no-ops.
-    - cron: "*/10 15-23 * * 6,0"
+  # No `schedule:` cron right now — there is no live (non-archived) tournament
+  # to refresh. When the next tournament goes live, re-add a schedule like:
+  #   schedule:
+  #     - cron: "*/10 15-23 * * 6,0"   # ~8 AM–4 PM Pacific, Sat & Sun (UTC, no DST)
+  # The per-tournament date window in meta.yml — not the cron — scopes refreshes.
 
 permissions:
   contents: read
