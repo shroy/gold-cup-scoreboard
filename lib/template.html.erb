@@ -53,12 +53,13 @@
   .stand th.rec{width:34px;padding:13px 6px;color:var(--faint)}
   .stand td.rec{width:34px;padding:14px 6px;font-size:14px;font-weight:600;color:var(--mut)}
   .stand td.pts{font-weight:800;font-size:16px;padding-right:18px}
-  .places{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
-  .place{display:flex;align-items:center;gap:11px;background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:13px 15px;border:1px solid var(--hair2)}
-  .place .pn{font-size:20px;font-weight:800;min-width:30px;text-align:center;color:var(--faint);font-variant-numeric:tabular-nums}
-  .place.p1{border-color:var(--gold);box-shadow:0 0 0 2px rgba(202,166,75,.18),var(--shadow)}
-  .place .pteam{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px;min-width:0}
-  .place .pteam .nm,.place .pteam{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .subnote{font-weight:600;color:var(--faint);text-transform:none;letter-spacing:0}
+  .stand th.sortable{cursor:pointer;user-select:none;-webkit-user-select:none;transition:color .12s}
+  .stand th.sortable:hover{color:var(--ink)}
+  .stand th.sortable .arrow{font-size:9px;margin-left:3px;opacity:0}
+  .stand th.sortable.asc .arrow,.stand th.sortable.desc .arrow{opacity:1;color:var(--accent)}
+  .stand td.tm .nm{min-width:0}
+  .stand td.tm .medal{font-size:15px;line-height:1}
   .seed{width:26px;height:26px;border-radius:7px;background:var(--pill);display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--mut);flex:none}
   tr.q1 .seed{background:var(--gold);color:#fff}tr.q2 .seed{background:#e8e8ed;color:var(--ink)}
   tr.q .rk{color:var(--accent)}tr.q1 td{background:rgba(202,166,75,.06)}
@@ -90,11 +91,11 @@
   .slot .seedlabel{display:flex;flex-direction:column;gap:1px;min-width:0}
   .slot .seedlabel .lab{font-weight:700}
   .slot .seedlabel .proj{font-size:11px;font-weight:500;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .slot .bsc{margin-left:auto;font-size:16px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--mut)}
+  .slot .bend{margin-left:auto;display:flex;align-items:center;gap:8px}
+  .slot .bsc{font-size:16px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--mut);min-width:14px;text-align:right}
   .slot.win .bsc{color:var(--ink)}.slot.win .lab{font-weight:800}
   .slot.lose .lab{color:var(--mut)}.slot.lose .bsc{color:var(--faint)}
-  .slot .bcheck{color:var(--live);font-weight:800;margin-left:8px}
-  .slot.lose .bcheck{display:none}
+  .slot .bcheck{color:var(--live);font-weight:800}
   .bout .winner{color:var(--ink);font-weight:800}.brow.final .bout .winner{color:var(--gold)}
   .brow.final .slot:first-child .sd{background:var(--gold);color:#fff}.brow.final .slot:nth-child(2) .sd{background:#e8e8ed;color:var(--ink)}
   .bconn{flex:none;width:34px;align-self:stretch;position:relative}
@@ -139,25 +140,22 @@
     <button data-v="bracket">Bracket</button>
   </div>
   <div id="standwrap">
-    <% if placement_complete? %>
-    <div class="sechead">Final Placement</div>
-    <div class="places">
-      <% placed.each do |p| %>
-      <div class="place p<%= p[:place] %>">
-        <span class="pn"><%= medal(p[:place]) %></span>
-        <span class="pteam"><span class="seed"><%= initials(p[:name]) %></span><%= short_name(p[:name]) %></span>
-      </div>
-      <% end %>
-    </div>
-    <% end %>
-    <div class="sechead"><%= placement_complete? ? 'Group Stage' : 'Standings' %></div>
-    <div class="stand"><table>
-      <thead><tr><th class="rk">#</th><th class="tm">Team</th><th class="rec">W</th><th class="rec">L</th><th class="rec">D</th><th class="pts" style="padding-right:18px">Pts</th></tr></thead>
+    <div class="sechead">Standings<% if placement_complete? %> <span class="subnote">· final placement</span><% end %></div>
+    <div class="stand"><table id="standtable">
+      <thead><tr>
+        <th class="rk">#</th>
+        <th class="tm">Team</th>
+        <th class="rec sortable" data-sort="w" title="Sort by wins">W<span class="arrow">▲</span></th>
+        <th class="rec sortable" data-sort="l" title="Sort by losses">L<span class="arrow">▲</span></th>
+        <th class="rec sortable" data-sort="d" title="Sort by draws">D<span class="arrow">▲</span></th>
+        <th class="pts sortable" data-sort="pts" style="padding-right:18px" title="Sort by points">Pts<span class="arrow">▲</span></th>
+      </tr></thead>
       <tbody>
       <% ranked.each_with_index do |t,i| %>
-        <tr class="<%= i==0 ? 'q q1' : i==1 ? 'q q2' : '' %>">
-          <td class="rk"><%= i+1 %></td>
-          <td class="tm"><span class="seed"><%= initials(t[:name]) %></span><%= short_name(t[:name]) %></td>
+        <% place = t[:place] || i+1 %>
+        <tr class="<%= place==1 ? 'q q1' : place==2 ? 'q q2' : '' %>" data-w="<%= t[:w] %>" data-l="<%= t[:l] %>" data-d="<%= t[:d] %>" data-pts="<%= t[:points] || -1 %>">
+          <td class="rk"><%= place %></td>
+          <td class="tm"><span class="seed"><%= initials(t[:name]) %></span><span class="nm"><%= short_name(t[:name]) %></span><% if placement_complete? && (m = medal(place)) %><span class="medal"><%= m %></span><% end %></td>
           <td class="rec tnum"><%= t[:w] %></td>
           <td class="rec tnum"><%= t[:l] %></td>
           <td class="rec tnum"><%= t[:d] %></td>
@@ -218,7 +216,7 @@ function renderBracket(){
   const gameFor=(a,b)=>GAMES.find(g=>g.seed_game&&g.home_score!=null&&g.away_score!=null&&
     [g.home_seed,g.away_seed].sort().join()===[a,b].sort().join());
   // A slot when the game IS played: real team + score, winner emphasized.
-  const playedSlot=(seed,team,score,win)=>`<div class="slot ${win?'win':'lose'}"><span class="sd">${seed}</span><span class="seedlabel"><span class="lab">${shortName(team)}</span><span class="proj">${ord[seed-1]}</span></span><span class="bsc">${score}</span>${win?'<span class="bcheck">✓</span>':''}</div>`;
+  const playedSlot=(seed,team,score,win)=>`<div class="slot ${win?'win':'lose'}"><span class="sd">${seed}</span><span class="seedlabel"><span class="lab">${shortName(team)}</span><span class="proj">${ord[seed-1]}</span></span><span class="bend">${win?'<span class="bcheck">✓</span>':''}<span class="bsc">${score}</span></span></div>`;
   // A slot when NOT yet played: projection from current seeding.
   const projSlot=n=>`<div class="slot"><span class="sd">${n}</span><span class="seedlabel"><span class="lab">${ord[n-1]}</span><span class="proj">Projected: ${shortName(proj(n))}</span></span></div>`;
   const anyPlayed=rounds.some(rd=>gameFor(rd.a,rd.b));
@@ -258,6 +256,43 @@ document.getElementById('tabs').addEventListener('click',e=>{
   [...e.currentTarget.children].forEach(b=>b.classList.remove('on'));
   e.target.classList.add('on');setView(e.target.dataset.v);
 });
+
+// Sortable standings: click a header to toggle asc -> desc -> off (default
+// placement order). The '#' (place) and Team columns aren't sortable.
+(function(){
+  const table=document.getElementById('standtable');
+  if(!table) return;
+  const tbody=table.tBodies[0];
+  const defaultOrder=[...tbody.rows];      // server order = final placement / points
+  let sortKey=null, dir=null;              // dir: 'asc' | 'desc' | null
+  function apply(){
+    table.querySelectorAll('th.sortable').forEach(th=>{
+      th.classList.toggle('asc', th.dataset.sort===sortKey&&dir==='asc');
+      th.classList.toggle('desc', th.dataset.sort===sortKey&&dir==='desc');
+      const a=th.querySelector('.arrow'); if(a) a.textContent=(th.dataset.sort===sortKey&&dir==='desc')?'▼':'▲';
+    });
+    let rows;
+    if(!dir){ rows=defaultOrder; }
+    else{
+      rows=[...defaultOrder].sort((x,y)=>{
+        const dx=+x.dataset[sortKey], dy=+y.dataset[sortKey];
+        return dir==='asc'?dx-dy:dy-dx;
+      });
+    }
+    rows.forEach(r=>tbody.appendChild(r));
+  }
+  table.querySelectorAll('th.sortable').forEach(th=>{
+    th.addEventListener('click',()=>{
+      const k=th.dataset.sort;
+      if(sortKey!==k){ sortKey=k; dir='desc'; }       // first click: high-to-low
+      else if(dir==='desc'){ dir='asc'; }
+      else if(dir==='asc'){ dir=null; sortKey=null; } // third click: back to default
+      else { dir='desc'; }
+      apply();
+    });
+  });
+})();
+
 setView('all');
 </script>
 </body>

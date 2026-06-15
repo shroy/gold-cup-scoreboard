@@ -45,11 +45,23 @@ class Generator
   def division = data[:division]              # from the CSV title row
   def logo     = meta.respond_to?(:logo?) && meta.logo? ? meta.logo_file : nil
 
+  # Teams with their group-stage record and (if the bracket is done) final
+  # place merged in. Default order is final placement when complete, else by
+  # group-stage points (wins, then losses as tiebreaks).
   def ranked
-    @ranked ||= data[:teams]
-                .map { |t| t.merge(records[t[:name]]) }
-                .sort_by { |t| [-(t[:points] || -1), -t[:w], t[:l]] }
+    @ranked ||= begin
+      rows = data[:teams].map do |t|
+        t.merge(records[t[:name]]).merge(place: placement_map[t[:name]])
+      end
+      if placement_complete?
+        rows.sort_by { |t| t[:place] }
+      else
+        rows.sort_by { |t| [-(t[:points] || -1), -t[:w], t[:l]] }
+      end
+    end
   end
+
+  def placement_map = data[:placement] || {}
 
   # Win/loss/draw per team from completed games (both scores present).
   # Seed/bracket placeholders ("1st in Points") have no scores and are skipped.
@@ -101,9 +113,9 @@ class Generator
     d.to_s.split.first # "Saturday 6/13" -> "Saturday"
   end
 
-  # Medal emoji for the podium, plain number otherwise.
+  # Medal emoji for the podium; nil for everyone else (so only top-3 highlight).
   def medal(place)
-    { 1 => "🥇", 2 => "🥈", 3 => "🥉" }[place] || place.to_s
+    { 1 => "🥇", 2 => "🥈", 3 => "🥉" }[place]
   end
 
   def day_key(d)
